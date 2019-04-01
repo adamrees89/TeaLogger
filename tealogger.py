@@ -10,7 +10,6 @@ Purpose of the script:
 
 # Import modules
 import datetime
-#import time # Used for the sleep functions
 import argparse
 import os
 import sqlite3
@@ -85,7 +84,7 @@ def SQLCounting(selectsql):
     c.execute(selectsql)
     TeaTotal = c.fetchone()[0]
     CloseCommitDatabase(conn)
-    
+
     return TeaTotal
 
 
@@ -102,8 +101,8 @@ def TodayTotal():
 # Function to display this weeks running total
 def WeekTotal():
     select_sql = """
-        SELECT SUM(count) from Tea 
-        where createTime > date('now', '-7 days')
+        SELECT SUM(count) from Tea
+         where createTime > date('now', '-7 days')
         """
     TeaTotal = SQLCounting(select_sql)
     print(TeaTotal)
