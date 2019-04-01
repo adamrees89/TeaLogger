@@ -10,7 +10,7 @@ Purpose of the script:
 
 #Import modules
 import datetime
-import time
+import time #Used for the sleep functions
 import argparse
 import os
 import sqlite3
@@ -57,33 +57,59 @@ def CloseCommitDatabase(conn):
 
 #Function to call another function
 def Decision(mode):
-    FunctionMap = {"newCuppa":AddTea(args.t),
+    FunctionMap = {"newCuppa":AddTea,
                    "countToday":TodayTotal,
                    "countWeek":WeekTotal,
                    "countYear":AnnualTotal}
-    FunctionMap[mode]
+    FunctionMap[mode]()
 
 #Function to add a cup to the sqlite3 file
-def AddTea(count):
+def AddTea():
+    count = args.t
     print("Ran the AddTea Function")
     conn, c = ConnectDatabase(database)
     insert_sql = f"""INSERT INTO Tea
-                (createTime, beverage, count) VALUES (?,?,?)"""
+                (createTime, beverage, count) VALUES (?,?,?)
+                """
     data = [datetime.datetime.now(),"tea",count]
     c.execute(insert_sql,data)
     CloseCommitDatabase(conn)
 
+#Code to avoid repeating the totalling functions
+def SQLCounting(selectsql):
+    conn, c = ConnectDatabase(database)
+    c.execute(selectsql)
+    TeaTotal = c.fetchone()[0]
+    CloseCommitDatabase(conn)
+    
+    return TeaTotal
+
 #Function to display today's running total
 def TodayTotal():
-    pass
+    select_sql = """
+        SELECT SUM(count) from Tea 
+        where createTime > date('now', '-1 day')
+        """
+    TeaTotal = SQLCounting(select_sql)
+    print(TeaTotal)
 
 #Function to display this weeks running total
 def WeekTotal():
-    pass
+    select_sql = """
+        SELECT SUM(count) from Tea 
+        where createTime > date('now', '-7 days')
+        """
+    TeaTotal = SQLCounting(select_sql)
+    print(TeaTotal)
 
 #Function to display this years running total
 def AnnualTotal():
-    pass
+    select_sql = """
+        SELECT SUM(count) from Tea 
+        where createTime > date('now', '-1 year')
+        """
+    TeaTotal = SQLCounting(select_sql)
+    print(TeaTotal)
 
 
 #Check the script name and run the functions as required
