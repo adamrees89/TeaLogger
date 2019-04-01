@@ -18,7 +18,7 @@ import sqlite3
 Set up and call argparse the later FunctionMap relates the modeChoices
 list to the Functions defined within this script
 """
-modeChoices = ["newCuppa", "countToday", "countWeek", "countYear"]
+modeChoices = ["Cuppa", "Today", "Week", "Year"]
 parser = argparse.ArgumentParser()
 parser.add_argument("mode",
                     help="Which mode?",
@@ -58,17 +58,16 @@ def CloseCommitDatabase(conn):
 
 # Function to call another function
 def Decision(mode):
-    FunctionMap = {"newCuppa": AddTea,
-                   "countToday": TodayTotal,
-                   "countWeek": WeekTotal,
-                   "countYear": AnnualTotal}
+    FunctionMap = {"Cuppa": AddTea,
+                   "Today": TodayTotal,
+                   "Week": WeekTotal,
+                   "Year": AnnualTotal}
     FunctionMap[mode]()
 
 
 # Function to add a cup to the sqlite3 file
 def AddTea():
     count = args.t
-    print("Ran the AddTea Function")
     conn, c = ConnectDatabase(database)
     insert_sql = f"""INSERT INTO Tea
                 (createTime, beverage, count) VALUES (?,?,?)
@@ -76,6 +75,7 @@ def AddTea():
     data = [datetime.datetime.now(),"tea",count]
     c.execute(insert_sql,data)
     CloseCommitDatabase(conn)
+    print(f"Ran the AddTea Function, added: {count} cups O'Tea")
 
 
 # Code to avoid repeating the totalling functions
@@ -95,7 +95,7 @@ def TodayTotal():
          where createTime > date('now', '-1 day')
         """
     TeaTotal = SQLCounting(select_sql)
-    print(TeaTotal)
+    print(f"You have drunk {TeaTotal} cups today!")
 
 
 # Function to display this weeks running total
@@ -105,7 +105,7 @@ def WeekTotal():
          where createTime > date('now', '-7 days')
         """
     TeaTotal = SQLCounting(select_sql)
-    print(TeaTotal)
+    print(f"You have drunk {TeaTotal} cups this week!")
 
 
 # Function to display this years running total
@@ -115,7 +115,7 @@ def AnnualTotal():
          where createTime > date('now', '-1 year')
         """
     TeaTotal = SQLCounting(select_sql)
-    print(TeaTotal)
+    print(f"You have drunk {TeaTotal} cups this year!")
 
 
 # Check the script name and run the functions as required
