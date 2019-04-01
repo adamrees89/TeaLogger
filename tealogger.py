@@ -8,9 +8,9 @@ Purpose of the script:
     Log number of cups 'o tea over time
 """
 
-#Import modules
+# Import modules
 import datetime
-import time #Used for the sleep functions
+#import time # Used for the sleep functions
 import argparse
 import os
 import sqlite3
@@ -30,16 +30,16 @@ parser.add_argument("-t", "--t", "-tea",
 parser.parse_args()
 args = parser.parse_args()
 
-#SQL Database Information
+# SQL Database Information
 workingDir = 'S:\Adam Rees'
 database = os.path.join(workingDir,'Teabase.db')
 
-#Function to connect to database
+# Function to connect to database
 def ConnectDatabase(database):
     conn = sqlite3.connect(database,detect_types=sqlite3.PARSE_DECLTYPES)
     c = conn.cursor()
     table_sql = f"""CREATE TABLE Tea
-                (id PRIMARY KEY,
+                (id integer PRIMARY KEY,
                 createTime TIMESTAMP,
                 beverage TEXT,
                 count INTEGER)"""
@@ -50,20 +50,23 @@ def ConnectDatabase(database):
         
     return conn, c
 
-#Function to close connection and commit data
+
+# Function to close connection and commit data
 def CloseCommitDatabase(conn):
     conn.commit()
     conn.close()
 
-#Function to call another function
+
+# Function to call another function
 def Decision(mode):
-    FunctionMap = {"newCuppa":AddTea,
-                   "countToday":TodayTotal,
-                   "countWeek":WeekTotal,
-                   "countYear":AnnualTotal}
+    FunctionMap = {"newCuppa": AddTea,
+                   "countToday": TodayTotal,
+                   "countWeek": WeekTotal,
+                   "countYear": AnnualTotal}
     FunctionMap[mode]()
 
-#Function to add a cup to the sqlite3 file
+
+# Function to add a cup to the sqlite3 file
 def AddTea():
     count = args.t
     print("Ran the AddTea Function")
@@ -75,7 +78,8 @@ def AddTea():
     c.execute(insert_sql,data)
     CloseCommitDatabase(conn)
 
-#Code to avoid repeating the totalling functions
+
+# Code to avoid repeating the totalling functions
 def SQLCounting(selectsql):
     conn, c = ConnectDatabase(database)
     c.execute(selectsql)
@@ -84,16 +88,18 @@ def SQLCounting(selectsql):
     
     return TeaTotal
 
-#Function to display today's running total
+
+# Function to display today's running total
 def TodayTotal():
     select_sql = """
-        SELECT SUM(count) from Tea 
-        where createTime > date('now', '-1 day')
+        SELECT SUM(count) from Tea
+         where createTime > date('now', '-1 day')
         """
     TeaTotal = SQLCounting(select_sql)
     print(TeaTotal)
 
-#Function to display this weeks running total
+
+# Function to display this weeks running total
 def WeekTotal():
     select_sql = """
         SELECT SUM(count) from Tea 
@@ -102,16 +108,17 @@ def WeekTotal():
     TeaTotal = SQLCounting(select_sql)
     print(TeaTotal)
 
-#Function to display this years running total
+
+# Function to display this years running total
 def AnnualTotal():
     select_sql = """
-        SELECT SUM(count) from Tea 
-        where createTime > date('now', '-1 year')
+        SELECT SUM(count) from Tea
+         where createTime > date('now', '-1 year')
         """
     TeaTotal = SQLCounting(select_sql)
     print(TeaTotal)
 
 
-#Check the script name and run the functions as required
+# Check the script name and run the functions as required
 if __name__ == "__main__":
     Decision(args.mode)
