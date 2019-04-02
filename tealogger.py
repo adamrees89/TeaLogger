@@ -18,7 +18,7 @@ import sqlite3
 Set up and call argparse the later FunctionMap relates the modeChoices
 list to the Functions defined within this script
 """
-modeChoices = ["Cuppa", "Today", "Week", "Year"]
+modeChoices = ["Cuppa", "24Hr", "Today", "Week", "Year", "Counts"]
 parser = argparse.ArgumentParser()
 parser.add_argument("mode",
                     help="Which mode?",
@@ -59,9 +59,11 @@ def CloseCommitDatabase(conn):
 # Function to call another function
 def Decision(mode):
     FunctionMap = {"Cuppa": AddTea,
+                   "24Hr": TwentyFourTotal,
                    "Today": TodayTotal,
                    "Week": WeekTotal,
-                   "Year": AnnualTotal}
+                   "Year": AnnualTotal,
+                   "Counts": RunTotals}
     FunctionMap[mode]()
 
 
@@ -89,21 +91,31 @@ def SQLCounting(selectsql):
 
 
 # Function to display today's running total
-def TodayTotal():
+def TwentyFourTotal():
     select_sql = """
-        SELECT SUM(count) from Tea
-         where createTime > date('now', '-1 day')
-        """
+                SELECT SUM(count) from Tea
+                where createTime > date('now', '-1 day')
+                """
+    TeaTotal = SQLCounting(select_sql)
+    print(f"You have drunk {TeaTotal} cups in the last 24 hours!")
+
+def TodayTotal():
+    d = datetime.datetime.now()
+    midnight = datetime.datetime(d.year,d.month,d.day,1,0,0,0)
+    epoch = midnight.timestamp()
+    select_sql = f"""
+                 SELECT SUM(count) from Tea
+                 where createTime > datetime({epoch},'unixepoch')
+                 """
     TeaTotal = SQLCounting(select_sql)
     print(f"You have drunk {TeaTotal} cups today!")
-
 
 # Function to display this weeks running total
 def WeekTotal():
     select_sql = """
-        SELECT SUM(count) from Tea
-         where createTime > date('now', '-7 days')
-        """
+                 SELECT SUM(count) from Tea
+                 where createTime > date('now', '-7 days')
+                 """
     TeaTotal = SQLCounting(select_sql)
     print(f"You have drunk {TeaTotal} cups this week!")
 
@@ -111,11 +123,18 @@ def WeekTotal():
 # Function to display this years running total
 def AnnualTotal():
     select_sql = """
-        SELECT SUM(count) from Tea
-         where createTime > date('now', '-1 year')
-        """
+                 SELECT SUM(count) from Tea
+                 where createTime > date('now', '-1 year')
+                 """
     TeaTotal = SQLCounting(select_sql)
     print(f"You have drunk {TeaTotal} cups this year!")
+
+
+def RunTotals():
+    TodayTotal()
+    TwentyFourTotal()
+    WeekTotal()
+    AnnualTotal()
 
 
 # Check the script name and run the functions as required
