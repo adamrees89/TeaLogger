@@ -99,9 +99,10 @@ def TwentyFourTotal():
     TeaTotal = SQLCounting(select_sql)
     print(f"You have drunk {TeaTotal} cups in the last 24 hours!")
 
+
 def TodayTotal():
     d = datetime.datetime.now()
-    midnight = datetime.datetime(d.year,d.month,d.day,1,0,0,0)
+    midnight = datetime.datetime(d.year, d.month, d.day, 1, 0, 0, 0)
     epoch = midnight.timestamp()
     select_sql = f"""
                  SELECT SUM(count) from Tea
@@ -109,6 +110,7 @@ def TodayTotal():
                  """
     TeaTotal = SQLCounting(select_sql)
     print(f"You have drunk {TeaTotal} cups today!")
+
 
 # Function to display this weeks running total
 def WeekTotal():
