@@ -10,15 +10,37 @@ Purpose of the script:
 
 # Import modules
 import datetime
+import time
+import sys
 import argparse
 import os
 import sqlite3
+import configparser
+
+"""
+Set up configuration file.
+"""
+path = "config.ini"
+
+
+def createConfig(path):
+    txt = input("Enter the proposed location of the teabase.db file: ")
+    config = configparser.ConfigParser()
+    config['DIRECTORIES'] = {'workingDir': txt}
+
+    with open(path, "w") as config_file:
+        config.write(config_file)
+
+    print("Updated Configuration, closing")
+    time.sleep(1)
+    sys.exit(0)
 
 """
 Set up and call argparse the later FunctionMap relates the modeChoices
 list to the Functions defined within this script
 """
-modeChoices = ["Cuppa", "24Hr", "Today", "Week", "Year", "Counts"]
+modeChoices = ["Cuppa", "24Hr", "Today", "Week",
+               "Year", "Counts", "Config"]
 parser = argparse.ArgumentParser()
 parser.add_argument("mode",
                     help="Which mode?",
@@ -29,8 +51,14 @@ parser.add_argument("-t", "--t", "-tea",
 parser.parse_args()
 args = parser.parse_args()
 
+if not os.path.exists(path):
+    createConfig(path)
+
+config = configparser.ConfigParser()
+config.read(path)
+workingDir = config.get("DIRECTORIES", "workingDir")
+
 # SQL Database Information
-workingDir = 'S:\Adam Rees'
 database = os.path.join(workingDir,'Teabase.db')
 
 # Function to connect to database
@@ -57,19 +85,26 @@ def CloseCommitDatabase(conn):
 
 
 # Function to call another function
-def Decision(mode):
+def Decision(mode, path):
     FunctionMap = {"Cuppa": AddTea,
                    "24Hr": TwentyFourTotal,
                    "Today": TodayTotal,
                    "Week": WeekTotal,
                    "Year": AnnualTotal,
-                   "Counts": RunTotals}
-    FunctionMap[mode]()
+                   "Counts": RunTotals,
+                   "Config": createConfig}
+    func = FunctionMap[mode]
+
+    if mode == "Config":
+        func(path)
+    elif mode == "Cuppa":
+        func(args.t)
+    else:
+        func()
 
 
 # Function to add a cup to the sqlite3 file
-def AddTea():
-    count = args.t
+def AddTea(count):
     conn, c = ConnectDatabase(database)
     insert_sql = f"""INSERT INTO Tea
                 (createTime, beverage, count) VALUES (?,?,?)
@@ -132,6 +167,7 @@ def AnnualTotal():
     print(f"You have drunk {TeaTotal} cups this year!")
 
 
+# Function to run the other functions
 def RunTotals():
     TodayTotal()
     TwentyFourTotal()
@@ -141,4 +177,4 @@ def RunTotals():
 
 # Check the script name and run the functions as required
 if __name__ == "__main__":
-    Decision(args.mode)
+        Decision(args.mode, path)
