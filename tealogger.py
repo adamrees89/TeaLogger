@@ -22,6 +22,7 @@ Set up configuration file.
 """
 path = "config.ini"
 
+
 def createConfig(path):
     txt = input("Enter the proposed location of the teabase.db file: ")
     config = configparser.ConfigParser()
@@ -29,7 +30,7 @@ def createConfig(path):
 
     with open(path, "w") as config_file:
         config.write(config_file)
-    
+
     print("Updated Configuration, closing")
     time.sleep(1)
     sys.exit(0)
