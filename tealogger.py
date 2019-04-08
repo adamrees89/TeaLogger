@@ -20,13 +20,15 @@ import configparser
 """
 Set up configuration file.
 """
-path = "config.ini"
+path = "BrewConfig.ini"
 
 
 def createConfig(path):
     txt = input("Enter the proposed location of the teabase.db file: ")
     config = configparser.ConfigParser()
     config['DIRECTORIES'] = {'workingDir': txt}
+    config['DIMENSIONS'] = {'diameter': 0.075,
+                            'depth': 0.085}
 
     with open(path, "w") as config_file:
         config.write(config_file)
