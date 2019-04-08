@@ -149,9 +149,13 @@ def TodayTotal():
 
 # Function to display this weeks running total
 def WeekTotal():
-    select_sql = """
+    d = datetime.datetime.now()
+    lastMonday = d - datetime.timedelta(days=d.weekday())
+    midnight = datetime.datetime(d.year, d.month, lastMonday.day, 1, 0, 0, 0)
+    epoch = midnight.timestamp()
+    select_sql = f"""
                  SELECT SUM(count) from Tea
-                 where createTime > date('now', '-7 days')
+                 where createTime > datetime({epoch},'unixepoch')
                  """
     TeaTotal = SQLCounting(select_sql)
     print(f"You have drunk {TeaTotal} cups this week!")
@@ -159,9 +163,12 @@ def WeekTotal():
 
 # Function to display this years running total
 def AnnualTotal():
-    select_sql = """
+    d = datetime.datetime.now()
+    midnight = datetime.datetime(d.year, 1, 1, 1, 0, 0, 0)
+    epoch = midnight.timestamp()
+    select_sql = f"""
                  SELECT SUM(count) from Tea
-                 where createTime > date('now', '-1 year')
+                 where createTime > datetime({epoch},'unixepoch')
                  """
     TeaTotal = SQLCounting(select_sql)
     print(f"You have drunk {TeaTotal} cups this year!")
