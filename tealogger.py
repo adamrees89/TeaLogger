@@ -29,6 +29,7 @@ def createConfig(path):
     config['DIRECTORIES'] = {'workingDir': txt}
     config['DIMENSIONS'] = {'diameter': 0.075,
                             'depth': 0.085}
+    config['VOLUMES'] = {'milkVolume': 10}
 
     with open(path, "w") as config_file:
         config.write(config_file)
@@ -126,6 +127,10 @@ def SQLCounting(selectsql):
 
     return TeaTotal
 
+def MilkAmount(cups):
+    Milk = int(config.get("VOLUMES", "milkVolume")) * int(cups)
+
+    return Milk
 
 # Function to display today's running total
 def TwentyFourTotal():
@@ -134,7 +139,9 @@ def TwentyFourTotal():
                 where createTime > date('now', '-1 day')
                 """
     TeaTotal = SQLCounting(select_sql)
-    print(f"You have drunk {TeaTotal} cups in the last 24 hours!")
+    Milk = MilkAmount(TeaTotal)
+    print(f"You have drunk {TeaTotal} cups in the last 24 hours! ({Milk}ml of "
+          "Semi-Skimmed Milk)")
 
 
 def TodayTotal():
@@ -146,7 +153,9 @@ def TodayTotal():
                  where createTime > datetime({epoch},'unixepoch')
                  """
     TeaTotal = SQLCounting(select_sql)
-    print(f"You have drunk {TeaTotal} cups today!")
+    Milk = MilkAmount(TeaTotal)
+    print(f"You have drunk {TeaTotal} cups today! ({Milk}ml of Semi-Skimmed"
+          " Milk)")
 
 
 # Function to display this weeks running total
@@ -160,7 +169,9 @@ def WeekTotal():
                  where createTime > datetime({epoch},'unixepoch')
                  """
     TeaTotal = SQLCounting(select_sql)
-    print(f"You have drunk {TeaTotal} cups this week!")
+    Milk = MilkAmount(TeaTotal)
+    print(f"You have drunk {TeaTotal} cups this week!({Milk}ml of Semi-Skimmed"
+          " Milk)")
 
 
 # Function to display this years running total
@@ -173,7 +184,9 @@ def AnnualTotal():
                  where createTime > datetime({epoch},'unixepoch')
                  """
     TeaTotal = SQLCounting(select_sql)
-    print(f"You have drunk {TeaTotal} cups this year!")
+    Milk = MilkAmount(TeaTotal)
+    print(f"You have drunk {TeaTotal} cups this year! ({Milk}ml of"
+          " Semi-Skimmed Milk)")
 
 
 # Function to run the other functions
