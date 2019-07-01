@@ -127,6 +127,8 @@ def SQLCounting(selectsql):
 
     return TeaTotal
 
+
+# Function to calculate milk volume over a number of cups
 def MilkAmount(cups):
     Milk = int(config.get("VOLUMES", "milkVolume")) * int(cups)
 
