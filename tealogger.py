@@ -106,10 +106,10 @@ def Decision(mode, path):
         func()
 
 
-#Function to make the printing to command line more uniform and pythonic
-def printInfo(count,period):
-	Milk = MilkAmount(count)
-	print(f"You have drunk {count} cups in the last {period}! ({Milk}ml of "
+# Function to make the printing to command line more uniform and pythonic
+def printInfo(count, period):
+    Milk = MilkAmount(count)
+    print(f"You have drunk {count} cups in the last {period}! ({Milk}ml of "
           "Semi-Skimmed Milk)")
 
 
@@ -149,7 +149,7 @@ def TwentyFourTotal():
                 where createTime > date('now', '-1 day')
                 """
     TeaTotal = SQLCounting(select_sql)
-    printInfo(TeaTotal,"24 Hours")
+    printInfo(TeaTotal, "24 Hours")
 
 
 def TodayTotal():
@@ -161,7 +161,7 @@ def TodayTotal():
                  where createTime > datetime({epoch},'unixepoch')
                  """
     TeaTotal = SQLCounting(select_sql)
-    printInfo(TeaTotal,"today")
+    printInfo(TeaTotal, "today")
 
 
 # Function to display this weeks running total
@@ -175,8 +175,7 @@ def WeekTotal():
                  where createTime > datetime({epoch},'unixepoch')
                  """
     TeaTotal = SQLCounting(select_sql)
-    Milk = MilkAmount(TeaTotal)
-    printInfo(TeaTotal,"week")
+    printInfo(TeaTotal, "week")
 
 
 # Function to display this years running total
@@ -189,8 +188,7 @@ def AnnualTotal():
                  where createTime > datetime({epoch},'unixepoch')
                  """
     TeaTotal = SQLCounting(select_sql)
-    Milk = MilkAmount(TeaTotal)
-    printInfo(TeaTotal,"year")
+    printInfo(TeaTotal, "year")
 
 
 # Function to run the other functions
