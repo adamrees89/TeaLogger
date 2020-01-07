@@ -77,7 +77,7 @@ def ConnectDatabase(database):
         c.execute(table_sql)
     except:
         pass
-
+        
     return conn, c
 
 
@@ -106,13 +106,6 @@ def Decision(mode, path):
         func()
 
 
-# Function to make the printing to command line more uniform and pythonic
-def printInfo(count, period):
-    Milk = MilkAmount(count)
-    print(f"You have drunk {count} cups in the last {period}! ({Milk}ml of "
-          "Semi-Skimmed Milk)")
-
-
 # Function to add a cup to the sqlite3 file
 def AddTea(count):
     conn, c = ConnectDatabase(database)
@@ -134,13 +127,10 @@ def SQLCounting(selectsql):
 
     return TeaTotal
 
-
-# Function to calculate milk volume over a number of cups
 def MilkAmount(cups):
     Milk = int(config.get("VOLUMES", "milkVolume")) * int(cups)
 
     return Milk
-
 
 # Function to display today's running total
 def TwentyFourTotal():
@@ -149,7 +139,9 @@ def TwentyFourTotal():
                 where createTime > date('now', '-1 day')
                 """
     TeaTotal = SQLCounting(select_sql)
-    printInfo(TeaTotal, "24 Hours")
+    Milk = MilkAmount(TeaTotal)
+    print(f"You have drunk {TeaTotal} cups in the last 24 hours! ({Milk}ml of "
+          "Semi-Skimmed Milk)")
 
 
 def TodayTotal():
@@ -161,7 +153,9 @@ def TodayTotal():
                  where createTime > datetime({epoch},'unixepoch')
                  """
     TeaTotal = SQLCounting(select_sql)
-    printInfo(TeaTotal, "today")
+    Milk = MilkAmount(TeaTotal)
+    print(f"You have drunk {TeaTotal} cups today! ({Milk}ml of Semi-Skimmed"
+          " Milk)")
 
 
 # Function to display this weeks running total
@@ -175,7 +169,9 @@ def WeekTotal():
                  where createTime > datetime({epoch},'unixepoch')
                  """
     TeaTotal = SQLCounting(select_sql)
-    printInfo(TeaTotal, "week")
+    Milk = MilkAmount(TeaTotal)
+    print(f"You have drunk {TeaTotal} cups this week!({Milk}ml of Semi-Skimmed"
+          " Milk)")
 
 
 # Function to display this years running total
@@ -188,7 +184,24 @@ def AnnualTotal():
                  where createTime > datetime({epoch},'unixepoch')
                  """
     TeaTotal = SQLCounting(select_sql)
-    printInfo(TeaTotal, "year")
+    Milk = MilkAmount(TeaTotal)
+    print(f"You have drunk {TeaTotal} cups this year! ({Milk}ml of"
+          " Semi-Skimmed Milk)")
+
+
+# Function to display last years running total
+def LastAnnualTotal():
+    d = datetime.datetime.now()
+    midnight = datetime.datetime(d.year-1, 1, 1, 1, 0, 0, 0)
+    epoch = midnight.timestamp()
+    select_sql = f"""
+                 SELECT SUM(count) from Tea
+                 where createTime > datetime({epoch},'unixepoch')
+                 """
+    TeaTotal = SQLCounting(select_sql)
+    Milk = MilkAmount(TeaTotal)
+    print(f"You have drunk {TeaTotal} cups last year! ({Milk}ml of"
+          " Semi-Skimmed Milk)")
 
 
 # Function to run the other functions
@@ -197,6 +210,7 @@ def RunTotals():
     TwentyFourTotal()
     WeekTotal()
     AnnualTotal()
+    LastAnnualTotal()
 
 
 # Check the script name and run the functions as required
