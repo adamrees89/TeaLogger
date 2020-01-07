@@ -77,7 +77,7 @@ def ConnectDatabase(database):
         c.execute(table_sql)
     except:
         pass
-        
+
     return conn, c
 
 
