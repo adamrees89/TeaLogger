@@ -16,11 +16,13 @@ import argparse
 import os
 import sqlite3
 import configparser
+import winshell
 
 """
 Set up configuration file.
 """
-path = "BrewConfig.ini"
+ParentDirectory = os.path.join(winshell.my_documents(),"HelperScripts")
+path = os.path.join(ParentDirectory, "Config", "BrewConfig.ini")
 
 
 def createConfig(path):
@@ -60,9 +62,12 @@ if not os.path.exists(path):
 config = configparser.ConfigParser()
 config.read(path)
 workingDir = config.get("DIRECTORIES", "workingDir")
+os.makedirs(workingDir)
 
 # SQL Database Information
 database = os.path.join(workingDir,'Teabase.db')
+
+print(database)
 
 # Function to connect to database
 def ConnectDatabase(database):
