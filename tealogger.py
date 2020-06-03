@@ -21,7 +21,7 @@ import winshell
 """
 Set up configuration file.
 """
-ParentDirectory = os.path.join(winshell.my_documents(),"HelperScripts")
+ParentDirectory = os.path.join(winshell.my_documents(), "HelperScripts")
 path = os.path.join(ParentDirectory, "Config", "BrewConfig.ini")
 
 
