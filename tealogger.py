@@ -62,12 +62,10 @@ if not os.path.exists(path):
 config = configparser.ConfigParser()
 config.read(path)
 workingDir = config.get("DIRECTORIES", "workingDir")
-os.makedirs(workingDir)
+os.makedirs(workingDir, exist_ok=True)
 
 # SQL Database Information
 database = os.path.join(workingDir,'Teabase.db')
-
-print(database)
 
 # Function to connect to database
 def ConnectDatabase(database):
